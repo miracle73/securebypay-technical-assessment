@@ -19,7 +19,7 @@ export class UsersService {
       .getOne();
   }
 
-  create(data: Pick<User, 'fullName' | 'email' | 'passwordHash'>) {
+  create(data: Pick<User, 'firstName' | 'lastName' | 'email' | 'phone' | 'passwordHash'> & Partial<User>) {
     return this.repo.save(this.repo.create(data));
   }
 }

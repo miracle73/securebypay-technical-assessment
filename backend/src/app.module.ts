@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
+import { DashboardModule, Shipment } from './dashboard/dashboard.module';
 
 @Controller('health')
 class HealthController {
@@ -19,7 +20,7 @@ class HealthController {
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: [User],
+      entities: [User, Shipment],
       // synchronize keeps setup to zero steps for the assessment; use migrations in production.
       synchronize: true,
       // Managed Postgres (Render/Railway) requires TLS; local Postgres usually does not.
@@ -27,6 +28,7 @@ class HealthController {
     }),
     UsersModule,
     AuthModule,
+    DashboardModule,
   ],
   controllers: [HealthController],
 })

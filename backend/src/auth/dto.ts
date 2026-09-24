@@ -8,13 +8,23 @@ const normEmail = ({ value }: { value: unknown }) =>
 export class RegisterDto {
   @Transform(trim)
   @IsString()
-  @MinLength(2)
-  @MaxLength(100)
-  fullName: string;
+  @MinLength(1)
+  @MaxLength(50)
+  firstName: string;
+
+  @Transform(trim)
+  @IsString()
+  @MinLength(1)
+  @MaxLength(50)
+  lastName: string;
 
   @Transform(normEmail)
   @IsEmail()
   email: string;
+
+  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/[\s-]/g, '') : value))
+  @Matches(/^\+\d{7,15}$/, { message: 'phone must be in international format, e.g. +2348012345678' })
+  phone: string;
 
   @IsString()
   @MinLength(8)

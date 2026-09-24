@@ -8,18 +8,26 @@ import * as bcrypt from 'bcryptjs';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from '../users/user.entity';
 import { UsersModule, UsersService } from '../users/users.module';
+import { DashboardModule, DashboardService } from '../dashboard/dashboard.module';
 import { LoginDto, RegisterDto } from './dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly users: UsersService, private readonly jwt: JwtService) {}
+  constructor(
+    private readonly users: UsersService,
+    private readonly jwt: JwtService,
+    private readonly dashboard: DashboardService,
+  ) {}
 
   async register(dto: RegisterDto) {
     if (await this.users.findByEmailWithPassword(dto.email)) {
       throw new ConflictException('An account with this email already exists');
     }
     const passwordHash = await bcrypt.hash(dto.password, 10);
-    const user = await this.users.create({ fullName: dto.fullName, email: dto.email, passwordHash });
+    const { password, ...profile } = dto;
+    // Demo opening balance so the wallet card matches the design.
+    const user = await this.users.create({ ...profile, passwordHash, walletBalance: '3000000.28' });
+    await this.dashboard.seedFor(user);
     return this.session(user);
   }
 
@@ -81,6 +89,7 @@ export class AuthController {
 @Module({
   imports: [
     UsersModule,
+    DashboardModule,
     PassportModule,
     JwtModule.registerAsync({
       useFactory: () => ({
