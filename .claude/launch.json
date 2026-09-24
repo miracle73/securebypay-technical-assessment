@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "web2", "runtimeExecutable": "node", "runtimeArgs": ["C:/Users/User/AppData/Local/Temp/claude/C--Users-User-Desktop-code-Assessments-securebypay-technical-assessment/8f01bc66-09d7-4cbb-b9fb-40cf138043c1/scratchpad/serve.js", "frontend/build/web"], "port": 8080 }
+  ]
+}
