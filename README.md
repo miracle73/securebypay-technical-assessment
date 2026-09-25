@@ -115,7 +115,7 @@ Validation: valid email (stored lower-cased); password 8–72 chars with at leas
 Breakpoints (`tokens.dart`): mobile under 600px, tablet 600–1023px, desktop 1024px and up.
 
 - **Auth screens.** Desktop keeps the design's 700/740 split with the world-map brand panel. Tablet and mobile hide the panel and centre the form. On narrow phones the first and last name fields stack, and the submit button goes full width.
-- **Dashboard.** Desktop has a fixed 240px side nav. Smaller screens use a drawer opened from a menu button in the top bar. The overview shows one row on desktop, the balance above a row of stats on tablet, and on mobile a full-width balance card above three compact stat cards. On mobile, shipment cards give the tracking ID its own row and put the other fields in 2 columns, and the chart labels every other month, and the banner and chart scale with width.
+- **Dashboard.** Desktop has a fixed 240px side nav. Smaller screens use a drawer opened from a menu button in the top bar. The overview shows one row on desktop, the balance above a row of stats on tablet, and on mobile a full-width balance card above three compact stat cards. On mobile, shipment cards give the tracking ID its own row and put the other fields in 2 columns, and the chart labels every other month. The banner and chart scale with width.
 
 ## Deployment
 
