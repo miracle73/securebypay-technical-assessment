@@ -64,3 +64,10 @@ class ApiClient {
     );
   }
 }
+
+/// Render's free tier sleeps idle services (~50s cold start). Pinging /health
+/// as soon as the app boots starts that wake-up while the user is still typing,
+/// so sign in / sign up don't pay the delay. Fire-and-forget; errors ignored.
+void wakeBackend() {
+  http.get(Uri.parse('$apiBaseUrl/health')).timeout(const Duration(seconds: 90)).ignore();
+}

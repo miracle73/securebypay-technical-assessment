@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
+import 'core/api_client.dart';
 import 'core/auth_controller.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -8,6 +9,7 @@ import 'theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy(); // clean URLs (/login) instead of /#/login
+  wakeBackend();
   final auth = AuthController();
   // Restore before the first frame so the router never flashes the wrong screen.
   await auth.restore();
