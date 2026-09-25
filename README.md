@@ -4,8 +4,8 @@ A shipping dashboard built from the [Figma design](https://www.figma.com/design/
 
 | | URL |
 |---|---|
-| Live app | _TODO: Vercel URL_ |
-| API | _TODO: Render URL_ (`/api/health`) |
+| Live app | https://securebypay-myafrimall.vercel.app |
+| API | https://securebypay-api-cw9m.onrender.com/api (health: `/api/health`) |
 | Figma | https://www.figma.com/design/ABTLIq49zQbsgwMgZSNAEK/Technical-test-_MashonaDev |
 
 ## Stack
