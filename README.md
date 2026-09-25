@@ -126,7 +126,7 @@ Breakpoints (`tokens.dart`): mobile under 600px, tablet 600–1023px, desktop 10
 ```bash
 cd frontend
 flutter build web --release --dart-define=API_BASE_URL=https://<render-app>.onrender.com/api
-vercel deploy build/web --prod
+cp -r build/web /tmp/site && cd /tmp/site && vercel deploy --prod   // copy out first: the CLI skips build/ because it is gitignored
 ```
 
 `web/vercel.json` rewrites every path to `index.html`, so deep links like `/dashboard` work.
