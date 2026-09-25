@@ -35,7 +35,7 @@ class _ShipmentCardState extends State<ShipmentCard> {
         border: Border.all(color: AppColors.gray200),
       ),
       child: Column(children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
             child: _Grid(mobile: mobile, children: [
               _Field('Tracking ID', Text(s.trackingId, style: AppText.bodySmall.copyWith(color: AppColors.primary, fontSize: 15))),
@@ -131,7 +131,12 @@ class _Grid extends StatelessWidget {
     }
     return LayoutBuilder(builder: (context, box) {
       final w = (box.maxWidth - 16) / 2;
-      return Wrap(spacing: 16, runSpacing: 16, children: [for (final c in children) SizedBox(width: w, child: c)]);
+      // With an odd count the first field (e.g. tracking ID) spans the full row.
+      final spanFirst = children.length.isOdd;
+      return Wrap(spacing: 16, runSpacing: 16, children: [
+        for (var i = 0; i < children.length; i++)
+          SizedBox(width: spanFirst && i == 0 ? box.maxWidth : w, child: children[i]),
+      ]);
     });
   }
 }
@@ -187,7 +192,7 @@ class _NigeriaFlag extends StatelessWidget {
     return SizedBox(
       width: 14,
       height: 10,
-      child: Row(children: [
+      child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Expanded(child: ColoredBox(color: g)),
         Expanded(child: ColoredBox(color: Colors.white)),
         Expanded(child: ColoredBox(color: g)),

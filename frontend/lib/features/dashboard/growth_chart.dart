@@ -77,6 +77,7 @@ class _Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final narrow = MediaQuery.sizeOf(context).width < Breakpoints.tablet;
     final axis = AppText.caption.copyWith(fontSize: 10, color: AppColors.gray400);
     return LineChart(
       LineChartData(
@@ -96,7 +97,7 @@ class _Chart extends StatelessWidget {
             sideTitles: SideTitles(
               showTitles: true,
               interval: 200,
-              reservedSize: 40,
+              reservedSize: narrow ? 34 : 40,
               getTitlesWidget: (v, _) => Text(v.toInt() == 1000 ? '1,000' : '${v.toInt()}', style: axis),
             ),
           ),
@@ -105,10 +106,12 @@ class _Chart extends StatelessWidget {
               showTitles: true,
               interval: 1,
               reservedSize: 24,
-              getTitlesWidget: (v, _) => Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text('${v.toInt() + 1}', style: axis),
-              ),
+              getTitlesWidget: (v, _) => narrow && points.length > 8 && v.toInt().isOdd
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text('${v.toInt() + 1}', style: axis),
+                    ),
             ),
           ),
         ),

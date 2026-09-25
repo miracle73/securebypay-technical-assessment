@@ -75,13 +75,12 @@ class _Slide extends StatelessWidget {
       child: ColoredBox(
         color: AppColors.navy,
         child: Stack(children: [
-          if (!narrow || width > 360)
-            Positioned(
+          Positioned(
               right: width * 0.02,
               top: -10,
               bottom: -10,
               child: Opacity(
-                opacity: narrow ? 0.45 : 1,
+                opacity: narrow ? 0.35 : 1,
                 child: Image.asset('assets/images/boxes.png', fit: BoxFit.contain),
               ),
             ),

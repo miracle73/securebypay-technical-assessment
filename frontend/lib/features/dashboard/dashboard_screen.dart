@@ -53,7 +53,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.neutral50,
-      drawer: desktop ? null : const Drawer(child: SideNav()),
+      drawer: desktop ? null : const Drawer(child: SideNav(inDrawer: true)),
       body: Row(
         children: [
           if (desktop) const SizedBox(width: 240, child: SideNav()),
@@ -115,8 +115,8 @@ class TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 96,
-      padding: const EdgeInsets.symmetric(horizontal: 26.5),
+      height: showMenu ? 80 : 96,
+      padding: EdgeInsets.symmetric(horizontal: showMenu ? 8 : 26.5),
       decoration: const BoxDecoration(
         color: AppColors.white,
         border: Border(bottom: BorderSide(color: AppColors.gray200)),

@@ -10,7 +10,7 @@ final naira = NumberFormat.currency(symbol: 'N', decimalDigits: 2);
 
 /// Overview heading + balance card + three stat cards.
 /// Desktop: one row (448px balance + 3 stats). Tablet: balance on its own row.
-/// Mobile: everything stacked.
+/// Mobile: balance full width, then three compact stat cards in one row.
 class OverviewSection extends StatelessWidget {
   const OverviewSection({super.key, required this.overview});
 
@@ -40,7 +40,7 @@ class OverviewSection extends StatelessWidget {
             ]),
           );
         }
-        final statRow = c.maxWidth >= 520
+        final statRow = c.maxWidth >= 300
             ? IntrinsicHeight(
                 child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   for (var i = 0; i < stats.length; i++) ...[
@@ -52,6 +52,21 @@ class OverviewSection extends StatelessWidget {
             : Column(children: [
                 for (final s in stats) ...[s, const SizedBox(height: 12)],
               ]);
+        // Phones get compact cards so all three stats fit on one row.
+        if (c.maxWidth < 520) {
+          return Column(children: [
+            balance,
+            const SizedBox(height: 12),
+            IntrinsicHeight(
+              child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                for (var i = 0; i < stats.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  Expanded(child: stats[i].compacted()),
+                ],
+              ]),
+            ),
+          ]);
+        }
         return Column(children: [balance, const SizedBox(height: 16), statRow]);
       }),
     ]);
@@ -87,6 +102,7 @@ class BalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -123,7 +139,13 @@ class StatCard extends StatelessWidget {
     required this.iconFg,
     required this.label,
     required this.value,
+    this.compact = false,
   });
+
+  StatCard compacted() => StatCard(icon: icon, iconBg: iconBg, iconFg: iconFg, label: label, value: value, compact: true);
+
+  /// Stacked icon-over-label layout for narrow phone columns.
+  final bool compact;
 
   final IconData icon;
   final Color iconBg;
@@ -133,6 +155,7 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (compact) return _buildCompact();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.sm)),
@@ -157,4 +180,24 @@ class StatCard extends StatelessWidget {
       ]),
     );
   }
+}
+
+extension on StatCard {
+  Widget _buildCompact() => Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(AppRadius.sm)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          CircleAvatar(radius: 14, backgroundColor: iconBg, child: Icon(icon, size: 15, color: iconFg)),
+          const SizedBox(height: 8),
+          Text(label, style: AppText.caption.copyWith(fontSize: 11, color: AppColors.gray800), maxLines: 2),
+          const Spacer(),
+          const SizedBox(height: 6),
+          Row(crossAxisAlignment: CrossAxisAlignment.baseline, textBaseline: TextBaseline.alphabetic, children: [
+            Text('$value', style: GoogleFonts.manrope(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.gray800)),
+            const SizedBox(width: 4),
+            const Icon(Icons.arrow_upward, size: 10, color: AppColors.success),
+            Flexible(child: Text('90%', style: AppText.caption.copyWith(fontSize: 10, color: AppColors.success))),
+          ]),
+        ]),
+      );
 }

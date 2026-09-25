@@ -7,7 +7,10 @@ import '../../theme/tokens.dart';
 /// Left navigation. Rendered inline on desktop and inside a Drawer below
 /// the desktop breakpoint. Only "Dashboard" is a real route in this build.
 class SideNav extends StatelessWidget {
-  const SideNav({super.key});
+  const SideNav({super.key, this.inDrawer = false});
+
+  /// Inside the mobile/tablet drawer the large desktop top offset is dropped.
+  final bool inDrawer;
 
   static const _items = [
     (Icons.dashboard_outlined, 'Dashboard'),
@@ -29,17 +32,22 @@ class SideNav extends StatelessWidget {
       child: SafeArea(
         child: CustomScrollView(slivers: [
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(30, 133, 30, 0),
+            padding: EdgeInsets.fromLTRB(inDrawer ? 16 : 30, inDrawer ? 32 : 133, inDrawer ? 16 : 30, 0),
             sliver: SliverList.separated(
               itemCount: _items.length,
               separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (_, i) => _NavItem(icon: _items[i].$1, label: _items[i].$2, active: i == 0),
+              itemBuilder: (_, i) => _NavItem(
+                icon: _items[i].$1,
+                label: _items[i].$2,
+                active: i == 0,
+                onTap: inDrawer ? () => Navigator.of(context).pop() : null,
+              ),
             ),
           ),
           SliverFillRemaining(
             hasScrollBody: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(46, 40, 16, 56),
+              padding: EdgeInsets.fromLTRB(inDrawer ? 32 : 46, 40, 16, inDrawer ? 32 : 56),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,11 +88,12 @@ class SideNav extends StatelessWidget {
 }
 
 class _NavItem extends StatelessWidget {
-  const _NavItem({required this.icon, required this.label, required this.active});
+  const _NavItem({required this.icon, required this.label, required this.active, this.onTap});
 
   final IconData icon;
   final String label;
   final bool active;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +103,7 @@ class _NavItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppRadius.sm),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        onTap: () {},
+        onTap: onTap ?? () {},
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(children: [
