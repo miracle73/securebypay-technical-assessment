@@ -13,6 +13,9 @@ class AppUser {
         email: j['email'] as String,
       );
 
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'firstName': firstName, 'lastName': lastName, 'email': email};
+
   final String id;
   final String firstName;
   final String lastName;

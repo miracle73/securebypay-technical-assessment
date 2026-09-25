@@ -107,7 +107,7 @@ Validation: valid email (stored lower-cased); password 8–72 chars with at leas
 3. **Client storage.** `AuthController` saves the token with `flutter_secure_storage`. On web that encrypts it with a WebCrypto AES key before putting it in localStorage. Server errors (e.g. "Invalid email or password", "email already exists") appear in a banner above the submit button.
 4. **Route guard.** `go_router`'s `redirect` sends signed-out users to `/login` and bounces signed-in users away from `/login` and `/signup`. It listens to `AuthController`, so logging in or out navigates straight away.
 5. **Authenticated requests.** `ApiClient` adds `Authorization: Bearer <token>`. On the server, `JwtStrategy` checks the signature and expiry, then reloads the user, so a token for a deleted account is rejected.
-6. **Restore and expiry.** On startup the app reads the stored token and calls `/auth/me`. If that fails, the token is cleared. A `401` from any dashboard call logs the user out, and the router sends them back to `/login`.
+6. **Restore and expiry.** On startup the app reads the stored token and a cached copy of the profile, and shows the dashboard straight away without waiting on the network, so a sleeping Render instance does not block the first screen. It then checks the token with `/auth/me` in the background, and a `401` ends the session. A `401` from any dashboard call logs the user out, and the router sends them back to `/login`.
 7. **Logout.** Deletes the stored token and clears the in-memory session.
 
 ## Responsive behaviour
