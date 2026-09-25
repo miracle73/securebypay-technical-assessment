@@ -6,9 +6,10 @@ import { HttpErrorFilter } from './common/http-error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // CORS_ORIGINS is a comma-separated allowlist; unset means allow all (local dev only).
+  // CORS_ORIGINS is a comma-separated allowlist of frontend origins.
   const origins = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean);
-  app.enableCors({ origin: origins?.length ? origins : true });
+  // Unset or "*" allows any origin.
+  app.enableCors({ origin: !origins?.length || origins.includes('*') ? true : origins });
   app.setGlobalPrefix('api');
   // whitelist strips unknown fields; forbidNonWhitelisted rejects them with a 400.
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
