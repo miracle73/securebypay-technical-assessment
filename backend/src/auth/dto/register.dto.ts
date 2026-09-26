@@ -1,9 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-validator';
-
-const trim = ({ value }: { value: unknown }) => (typeof value === 'string' ? value.trim() : value);
-const normEmail = ({ value }: { value: unknown }) =>
-  typeof value === 'string' ? value.trim().toLowerCase() : value;
+import { normalizeEmail, stripPhoneSeparators, trim } from './transforms';
 
 export class RegisterDto {
   @Transform(trim)
@@ -18,27 +15,17 @@ export class RegisterDto {
   @MaxLength(50)
   lastName: string;
 
-  @Transform(normEmail)
+  @Transform(normalizeEmail)
   @IsEmail()
   email: string;
 
-  @Transform(({ value }) => (typeof value === 'string' ? value.replace(/[\s-]/g, '') : value))
+  @Transform(stripPhoneSeparators)
   @Matches(/^\+\d{7,15}$/, { message: 'phone must be in international format, e.g. +2348012345678' })
   phone: string;
 
   @IsString()
   @MinLength(8)
-  @MaxLength(72) // bcrypt ignores bytes beyond 72
+  @MaxLength(72) // bcrypt only uses the first 72 bytes
   @Matches(/(?=.*[A-Za-z])(?=.*\d)/, { message: 'password must contain a letter and a number' })
-  password: string;
-}
-
-export class LoginDto {
-  @Transform(normEmail)
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @MinLength(1)
   password: string;
 }

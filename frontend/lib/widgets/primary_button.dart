@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 
-/// The Figma "Button / Primary": brand fill with a subtle top highlight,
-/// 52px tall, 8px radius. Shows a spinner and ignores taps while [loading].
+/// Primary action button. Shows a spinner and ignores taps while [loading].
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,

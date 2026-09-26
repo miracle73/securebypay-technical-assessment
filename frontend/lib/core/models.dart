@@ -13,16 +13,14 @@ class AppUser {
         email: j['email'] as String,
       );
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'firstName': firstName, 'lastName': lastName, 'email': email};
+  Map<String, dynamic> toJson() => {'id': id, 'firstName': firstName, 'lastName': lastName, 'email': email};
 
   final String id;
   final String firstName;
   final String lastName;
   final String email;
 
-  String get initials =>
-      '${firstName.isEmpty ? '' : firstName[0]}${lastName.isEmpty ? '' : lastName[0]}'.toUpperCase();
+  String get initials => '${firstName.isEmpty ? '' : firstName[0]}${lastName.isEmpty ? '' : lastName[0]}'.toUpperCase();
 }
 
 class Overview {

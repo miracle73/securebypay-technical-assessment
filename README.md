@@ -19,20 +19,22 @@ A shipping dashboard built from the [Figma design](https://www.figma.com/design/
 ## Repository layout
 
 ```
-backend/
-  src/main.ts                      bootstrap: CORS, /api prefix, validation pipe, error filter
-  src/auth/                        register / login / me, JWT strategy, DTOs
-  src/users/                       User entity + service
-  src/dashboard/                   Shipment entity; overview / shipments / growth endpoints
-  src/common/http-error.filter.ts  one error shape for every failure
-frontend/
-  lib/theme/tokens.dart            design tokens from Figma (colours, radii, spacing, breakpoints)
-  lib/theme/app_theme.dart         ThemeData + text styles built from the tokens
-  lib/core/                        ApiClient, AuthController (session + secure token storage), models
-  lib/router.dart                  auth-gated routes
-  lib/features/auth/               sign in / sign up screens, shared split layout, validators
-  lib/features/dashboard/          dashboard split into small widgets (nav, banner, overview, chart, cards)
-render.yaml                        Render Blueprint (API + Postgres)
+backend/src/
+  main.ts                         bootstrap: CORS, /api prefix, validation pipe, error filter
+  config/env.validation.ts        fails fast on missing or invalid env vars
+  auth/                           controller, service, JWT strategy + guard, DTOs
+  users/                          User entity + service
+  dashboard/                      Shipment entity, service, controller, query DTOs
+  common/                         exception filter, @CurrentUser decorator
+  health/                         liveness endpoint
+frontend/lib/
+  theme/                          design tokens from Figma + ThemeData
+  core/                           ApiClient, AuthController, AuthScope, models
+  router.dart                     auth-gated routes
+  widgets/                        shared inputs and buttons
+  features/auth/                  sign in / sign up, shared layout, validators
+  features/dashboard/             dashboard widgets + DashboardRepository
+render.yaml                       Render Blueprint (API + Postgres)
 ```
 
 ## Local setup
@@ -98,7 +100,7 @@ All routes are prefixed with `/api`. Protected routes need `Authorization: Beare
 
 `400` validation · `401` bad credentials / missing or invalid token · `409` email already registered · `500` unexpected.
 
-Validation: valid email (stored lower-cased); password 8–72 chars with at least one letter and one number; phone in international format (`+2348012345678`); unknown fields are rejected.
+Validation: valid email (stored lower-cased); password 8–72 chars with at least one letter and one number; phone in international format (`+2348012345678`); unknown fields are rejected. Query params are validated too (`limit` 1–50, `period` one of year/month/week).
 
 ## Auth flow (end to end)
 

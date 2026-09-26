@@ -26,15 +26,13 @@ class ApiException implements Exception {
 /// Thin JSON-over-HTTP wrapper. [tokenProvider] is read on every request so a
 /// fresh login is picked up without rebuilding the client.
 class ApiClient {
-  ApiClient({required this.tokenProvider, http.Client? client})
-      : _http = client ?? http.Client();
+  ApiClient({required this.tokenProvider, http.Client? client}) : _http = client ?? http.Client();
 
   final String? Function() tokenProvider;
   final http.Client _http;
 
   Future<dynamic> get(String path) => _send('GET', path);
-  Future<dynamic> post(String path, Map<String, dynamic> body) =>
-      _send('POST', path, body);
+  Future<dynamic> post(String path, Map<String, dynamic> body) => _send('POST', path, body);
 
   Future<dynamic> _send(String method, String path, [Object? body]) async {
     final token = tokenProvider();
@@ -46,10 +44,9 @@ class ApiClient {
 
     final http.Response res;
     try {
-      res = await http.Response.fromStream(
-          await _http.send(req).timeout(const Duration(seconds: 60)));
+      res = await http.Response.fromStream(await _http.send(req).timeout(const Duration(seconds: 60)));
     } catch (_) {
-      // Network failure, CORS rejection or timeout (free Render instances cold-start slowly).
+      // Network failure, CORS rejection or timeout.
       throw ApiException('Could not reach the server. Check your connection and try again.');
     }
 
@@ -65,9 +62,8 @@ class ApiClient {
   }
 }
 
-/// Render's free tier sleeps idle services (~50s cold start). Pinging /health
-/// as soon as the app boots starts that wake-up while the user is still typing,
-/// so sign in / sign up don't pay the delay. Fire-and-forget; errors ignored.
+/// The API sleeps when idle on Render's free tier. Hitting /health at boot
+/// overlaps its ~50s cold start with the time the user spends on the form.
 void wakeBackend() {
   http.get(Uri.parse('$apiBaseUrl/health')).timeout(const Duration(seconds: 90)).ignore();
 }

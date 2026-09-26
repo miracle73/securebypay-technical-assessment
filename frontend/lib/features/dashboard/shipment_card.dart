@@ -38,7 +38,8 @@ class _ShipmentCardState extends State<ShipmentCard> {
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Expanded(
             child: _Grid(mobile: mobile, children: [
-              _Field('Tracking ID', Text(s.trackingId, style: AppText.bodySmall.copyWith(color: AppColors.primary, fontSize: 15))),
+              _Field('Tracking ID',
+                  Text(s.trackingId, style: AppText.bodySmall.copyWith(color: AppColors.primary, fontSize: 15))),
               _Field('Sender', _value(s.sender)),
               _Field('Receiver', _value(s.receiver)),
             ]),
@@ -64,11 +65,13 @@ class _ShipmentCardState extends State<ShipmentCard> {
             runSpacing: 12,
             spacing: 12,
             children: [
-              _Field('Processing time', Row(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.timer_outlined, size: 18, color: AppColors.gray800),
-                const SizedBox(width: 8),
-                _value('${s.processingHours} hours'),
-              ])),
+              _Field(
+                  'Processing time',
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.timer_outlined, size: 18, color: AppColors.gray800),
+                    const SizedBox(width: 8),
+                    _value('${s.processingHours} hours'),
+                  ])),
               Row(mainAxisSize: MainAxisSize.min, children: [
                 OutlinedButton(
                   onPressed: () {},
@@ -182,14 +185,14 @@ class StatusChip extends StatelessWidget {
   }
 }
 
-/// Green-white-green flag drawn with boxes (no image asset needed).
+/// Nigerian flag, drawn rather than shipped as an asset.
 class _NigeriaFlag extends StatelessWidget {
   const _NigeriaFlag();
 
   @override
   Widget build(BuildContext context) {
-    const g = Color(0xFF008751);
-    return SizedBox(
+    const g = AppColors.flagGreen;
+    return const SizedBox(
       width: 14,
       height: 10,
       child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

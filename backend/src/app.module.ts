@@ -1,30 +1,25 @@
-import { Controller, Get, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { validateEnv } from './config/env.validation';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { HealthController } from './health/health.controller';
 import { UsersModule } from './users/users.module';
-import { User } from './users/user.entity';
-import { DashboardModule, Shipment } from './dashboard/dashboard.module';
-
-@Controller('health')
-class HealthController {
-  @Get()
-  check() {
-    return { status: 'ok' };
-  }
-}
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      entities: [User, Shipment],
-      // synchronize keeps setup to zero steps for the assessment; use migrations in production.
-      synchronize: true,
-      // Managed Postgres (Render/Railway) requires TLS; local Postgres usually does not.
-      ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false,
+    ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres',
+        url: config.getOrThrow<string>('DATABASE_URL'),
+        ssl: config.get('DATABASE_SSL') === 'true' ? { rejectUnauthorized: false } : false,
+        autoLoadEntities: true,
+        // Schema sync keeps local setup to one step. Swap for migrations before real traffic.
+        synchronize: true,
+      }),
     }),
     UsersModule,
     AuthModule,

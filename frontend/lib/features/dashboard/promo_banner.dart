@@ -44,7 +44,8 @@ class _PromoBannerState extends State<PromoBanner> {
         children: [
           for (var i = 0; i < _slides; i++)
             GestureDetector(
-              onTap: () => _controller.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.easeOut),
+              onTap: () =>
+                  _controller.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.easeOut),
               child: Container(
                 width: 12,
                 height: 12,
@@ -76,14 +77,14 @@ class _Slide extends StatelessWidget {
         color: AppColors.navy,
         child: Stack(children: [
           Positioned(
-              right: width * 0.02,
-              top: -10,
-              bottom: -10,
-              child: Opacity(
-                opacity: narrow ? 0.35 : 1,
-                child: Image.asset('assets/images/boxes.png', fit: BoxFit.contain),
-              ),
+            right: width * 0.02,
+            top: -10,
+            bottom: -10,
+            child: Opacity(
+              opacity: narrow ? 0.35 : 1,
+              child: Image.asset('assets/images/boxes.png', fit: BoxFit.contain),
             ),
+          ),
           Positioned(
             left: narrow ? 20 : 35.6,
             right: narrow ? 20 : width * 0.45,

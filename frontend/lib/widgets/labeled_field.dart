@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 
-/// The Figma "Input-Text": a 16px label above an outlined field.
-/// Validation errors render inline beneath the field.
+/// Label above an outlined field; validation errors render inline.
 class LabeledField extends StatefulWidget {
   const LabeledField({
     super.key,

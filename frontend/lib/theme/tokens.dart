@@ -33,6 +33,13 @@ abstract final class AppColors {
   static const delayedBg = Color(0xFFCFFAFE);
   static const delayedFg = Color(0xFF0E7490);
   static const deliveredBg = Color(0xFFEBFFE2);
+
+  // Overview stat icons
+  static const shipmentBg = Color(0xFFFDEBD2);
+  static const shipmentFg = Color(0xFFC77700);
+  static const exportBg = Color(0xFFD9FBD4);
+  static const importBg = Color(0xFFD6F4FB);
+  static const flagGreen = Color(0xFF008751);
 }
 
 abstract final class AppRadius {

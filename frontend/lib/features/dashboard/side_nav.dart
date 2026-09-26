@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
+import '../../core/auth_scope.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 
-/// Left navigation. Rendered inline on desktop and inside a Drawer below
-/// the desktop breakpoint. Only "Dashboard" is a real route in this build.
+/// Inline on desktop, inside a Drawer below it. Only Dashboard is routed for now.
 class SideNav extends StatelessWidget {
   const SideNav({super.key, this.inDrawer = false});
 
-  /// Inside the mobile/tablet drawer the large desktop top offset is dropped.
   final bool inDrawer;
 
   static const _items = [
@@ -109,7 +107,9 @@ class _NavItem extends StatelessWidget {
           child: Row(children: [
             Icon(icon, size: 22, color: fg),
             const SizedBox(width: 10),
-            Text(label, style: AppText.bodySmall.copyWith(fontSize: 15, color: fg, fontWeight: active ? FontWeight.w600 : null)),
+            Text(label,
+                style:
+                    AppText.bodySmall.copyWith(fontSize: 15, color: fg, fontWeight: active ? FontWeight.w600 : null)),
           ]),
         ),
       ),

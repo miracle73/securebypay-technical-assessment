@@ -5,12 +5,19 @@ import '../../core/api_client.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 
-/// Body text with one or more inline underlined links, e.g.
-/// "Do you already have an account? **Login**".
-class LinkText extends StatefulWidget {
-  const LinkText({super.key, required this.parts});
+/// A tappable segment inside [LinkText]. A null [onTap] renders the link style only.
+class Link {
+  const Link(this.label, [this.onTap]);
 
-  /// Plain strings render as body text; `(label, onTap)` records render as links.
+  final String label;
+  final VoidCallback? onTap;
+}
+
+/// Body copy with inline links, e.g. "Already have an account? **Login**".
+/// [parts] may contain plain [String]s and [Link]s.
+class LinkText extends StatefulWidget {
+  const LinkText(this.parts, {super.key});
+
   final List<Object> parts;
 
   @override
@@ -22,46 +29,58 @@ class _LinkTextState extends State<LinkText> {
 
   @override
   void dispose() {
-    for (final r in _recognizers) {
-      r.dispose();
-    }
+    _disposeRecognizers();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void _disposeRecognizers() {
     for (final r in _recognizers) {
       r.dispose();
     }
     _recognizers.clear();
-    return Text.rich(TextSpan(
-      style: AppText.body,
-      children: [
-        for (final p in widget.parts)
-          if (p is (String, VoidCallback?))
-            TextSpan(
-              text: p.$1,
-              style: AppText.link,
-              recognizer: p.$2 == null
-                  ? null
-                  : (TapGestureRecognizer()..onTap = p.$2).also(_recognizers.add),
-              mouseCursor: SystemMouseCursors.click,
-            )
-          else
-            TextSpan(text: p.toString()),
-      ],
-    ));
+  }
+
+  TextSpan _span(Object part) {
+    if (part is! Link) return TextSpan(text: '$part');
+
+    TapGestureRecognizer? recognizer;
+    if (part.onTap != null) {
+      recognizer = TapGestureRecognizer()..onTap = part.onTap;
+      _recognizers.add(recognizer);
+    }
+    return TextSpan(
+      text: part.label,
+      style: AppText.link,
+      recognizer: recognizer,
+      mouseCursor: recognizer == null ? null : SystemMouseCursors.click,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _disposeRecognizers();
+    return Text.rich(TextSpan(style: AppText.body, children: widget.parts.map(_span).toList()));
   }
 }
 
-extension _Also<T> on T {
-  T also(void Function(T) f) {
-    f(this);
-    return this;
+class TermsText extends StatelessWidget {
+  const TermsText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 393),
+      child: const LinkText([
+        'By clicking on create account you agree to our ',
+        Link('privacy policy'),
+        ' and ',
+        Link('terms of use'),
+      ]),
+    );
   }
 }
 
-/// Red banner shown above the submit button when the API rejects a request.
+/// Shown above the submit button when the API rejects a request.
 class FormErrorBanner extends StatelessWidget {
   const FormErrorBanner({super.key, required this.error});
 
@@ -69,6 +88,7 @@ class FormErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = AppText.body.copyWith(color: AppColors.error);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -86,44 +106,13 @@ class FormErrorBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(error.message, style: AppText.body.copyWith(color: AppColors.error)),
-                for (final d in error.details)
-                  Text('• $d', style: AppText.body.copyWith(color: AppColors.error, fontSize: 13)),
+                Text(error.message, style: style),
+                for (final detail in error.details) Text('• $detail', style: style.copyWith(fontSize: 13)),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-/// Client-side validators mirroring the backend DTO rules so users see the
-/// same constraints before the request is sent.
-abstract final class Validators {
-  static final _email = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-
-  static String? required(String? v, String field) =>
-      (v == null || v.trim().isEmpty) ? '$field is required' : null;
-
-  static String? email(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Email is required';
-    return _email.hasMatch(v.trim()) ? null : 'Enter a valid email address';
-  }
-
-  static String? phone(String? v) {
-    final digits = (v ?? '').replaceAll(RegExp(r'[\s-]'), '');
-    if (digits.isEmpty) return 'Phone number is required';
-    if (!RegExp(r'^\d{7,12}$').hasMatch(digits)) return 'Enter a valid phone number';
-    return null;
-  }
-
-  static String? newPassword(String? v) {
-    if (v == null || v.isEmpty) return 'Password is required';
-    if (v.length < 8) return 'Use at least 8 characters';
-    if (!RegExp(r'[A-Za-z]').hasMatch(v) || !RegExp(r'\d').hasMatch(v)) {
-      return 'Include at least one letter and one number';
-    }
-    return null;
   }
 }

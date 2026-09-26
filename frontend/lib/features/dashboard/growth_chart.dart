@@ -1,12 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
+import '../../core/auth_scope.dart';
+import 'dashboard_repository.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 
-/// "Company Growth" card: Year/Month/Week toggle + smoothed area line chart.
-/// Series come from GET /dashboard/growth?period=...
+/// "Company Growth" card with a Year/Month/Week toggle.
 class GrowthChartCard extends StatefulWidget {
   const GrowthChartCard({super.key});
 
@@ -15,15 +15,9 @@ class GrowthChartCard extends StatefulWidget {
 }
 
 class _GrowthChartCardState extends State<GrowthChartCard> {
-  static const _periods = ['Year', 'Month', 'Week'];
-  String _period = 'Year';
-  late Future<List<double>> _points = _fetch();
-
-  Future<List<double>> _fetch() async {
-    final res = await AuthScope.read(context).api.get('/dashboard/growth?period=${_period.toLowerCase()}')
-        as Map<String, dynamic>;
-    return (res['points'] as List).map((e) => (e as num).toDouble()).toList();
-  }
+  late final _repository = DashboardRepository(AuthScope.read(context).api);
+  GrowthPeriod _period = GrowthPeriod.year;
+  late Future<List<double>> _points = _repository.growth(_period);
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +38,10 @@ class _GrowthChartCardState extends State<GrowthChartCard> {
           children: [
             Text('Company Growth', style: AppText.h2.copyWith(fontSize: 16)),
             _SegmentedToggle(
-              options: _periods,
               selected: _period,
               onChanged: (p) => setState(() {
                 _period = p;
-                _points = _fetch();
+                _points = _repository.growth(p);
               }),
             ),
           ],
@@ -86,8 +79,7 @@ class _Chart extends StatelessWidget {
         gridData: FlGridData(
           drawVerticalLine: false,
           horizontalInterval: 200,
-          getDrawingHorizontalLine: (_) =>
-              const FlLine(color: AppColors.gray200, strokeWidth: 1, dashArray: [4, 4]),
+          getDrawingHorizontalLine: (_) => const FlLine(color: AppColors.gray200, strokeWidth: 1, dashArray: [4, 4]),
         ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
@@ -139,11 +131,10 @@ class _Chart extends StatelessWidget {
 }
 
 class _SegmentedToggle extends StatelessWidget {
-  const _SegmentedToggle({required this.options, required this.selected, required this.onChanged});
+  const _SegmentedToggle({required this.selected, required this.onChanged});
 
-  final List<String> options;
-  final String selected;
-  final ValueChanged<String> onChanged;
+  final GrowthPeriod selected;
+  final ValueChanged<GrowthPeriod> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +142,7 @@ class _SegmentedToggle extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(color: AppColors.gray100, borderRadius: BorderRadius.circular(AppRadius.sm)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        for (final o in options)
+        for (final o in GrowthPeriod.values)
           GestureDetector(
             onTap: () => onChanged(o),
             child: MouseRegion(
@@ -163,9 +154,9 @@ class _SegmentedToggle extends StatelessWidget {
                   color: o == selected ? AppColors.white : Colors.transparent,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(o,
-                    style: AppText.bodySmall.copyWith(
-                        fontSize: 13, color: o == selected ? AppColors.gray800 : AppColors.gray500)),
+                child: Text(_label(o),
+                    style: AppText.bodySmall
+                        .copyWith(fontSize: 13, color: o == selected ? AppColors.gray800 : AppColors.gray500)),
               ),
             ),
           ),
@@ -173,3 +164,5 @@ class _SegmentedToggle extends StatelessWidget {
     );
   }
 }
+
+String _label(GrowthPeriod p) => '${p.name[0].toUpperCase()}${p.name.substring(1)}';

@@ -1,19 +1,25 @@
 import 'reflect-metadata';
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { HttpErrorFilter } from './common/http-error.filter';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+
+function corsOrigin(raw?: string): boolean | string[] {
+  const origins = raw?.split(',').map((o) => o.trim()).filter(Boolean) ?? [];
+  return origins.length === 0 || origins.includes('*') ? true : origins;
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // CORS_ORIGINS is a comma-separated allowlist of frontend origins.
-  const origins = process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean);
-  // Unset or "*" allows any origin.
-  app.enableCors({ origin: !origins?.length || origins.includes('*') ? true : origins });
+  const config = app.get(ConfigService);
+
   app.setGlobalPrefix('api');
-  // whitelist strips unknown fields; forbidNonWhitelisted rejects them with a 400.
+  app.enableCors({ origin: corsOrigin(config.get('CORS_ORIGINS')) });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
-  app.useGlobalFilters(new HttpErrorFilter());
-  await app.listen(process.env.PORT || 3000, '0.0.0.0');
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  await app.listen(config.get<number>('PORT') ?? 3000, '0.0.0.0');
 }
+
 bootstrap();

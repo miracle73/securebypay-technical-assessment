@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/api_client.dart';
-import '../../main.dart';
+import '../../core/auth_scope.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/labeled_field.dart';
 import '../../widgets/primary_button.dart';
 import 'auth_layout.dart';
 import 'auth_widgets.dart';
-import 'sign_up_screen.dart' show TermsText;
+import 'validators.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -49,9 +49,9 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return AuthLayout(
       title: 'Sign in to your account',
-      subtitle: LinkText(parts: [
-        'Log in to Myafrimall to enjoy seamless shipping to over 300 countries right from Nigeria.. Don’t have an account yet? ',
-        ('Sign Up', () => context.go('/signup')),
+      subtitle: LinkText([
+        'Log in to Myafrimall to enjoy seamless shipping to over 300 countries right from Nigeria. Don’t have an account yet? ',
+        Link('Sign Up', () => context.go('/signup')),
       ]),
       panelTitle: 'Effortlessly Track Your Shipments from Nigeria!',
       panelBody: 'Monitor your shipments from Nigeria! Enjoy swift delivery and seamless customs processing',

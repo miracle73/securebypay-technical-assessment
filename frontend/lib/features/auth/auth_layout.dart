@@ -72,9 +72,10 @@ class _FormPane extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppText.h1.copyWith(
-                    fontSize: MediaQuery.sizeOf(context).width < Breakpoints.tablet ? 26 : 32,
-                  )),
+                  Text(title,
+                      style: AppText.h1.copyWith(
+                        fontSize: MediaQuery.sizeOf(context).width < Breakpoints.tablet ? 26 : 32,
+                      )),
                   const SizedBox(height: AppSpacing.sm),
                   ConstrainedBox(constraints: const BoxConstraints(maxWidth: 453), child: subtitle),
                   const SizedBox(height: 36),
@@ -126,7 +127,8 @@ class _BrandPanel extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 579),
                   child: Text(body,
-                      style: GoogleFonts.dmSans(fontSize: 16, color: Colors.white.withValues(alpha: 0.85), height: 1.6)),
+                      style:
+                          GoogleFonts.dmSans(fontSize: 16, color: Colors.white.withValues(alpha: 0.85), height: 1.6)),
                 ),
               ],
             ),

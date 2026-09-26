@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/api_client.dart';
-import '../../main.dart';
+import '../../core/auth_scope.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
 import '../../widgets/labeled_field.dart';
 import '../../widgets/primary_button.dart';
 import 'auth_layout.dart';
 import 'auth_widgets.dart';
+import 'validators.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -52,7 +53,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         phone: '$_dialCode$national',
         password: _password.text,
       );
-      // The router redirects to /dashboard once the session is set.
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {
@@ -64,9 +64,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return AuthLayout(
       title: 'Create an account',
-      subtitle: LinkText(parts: [
+      subtitle: LinkText([
         'Sign up for Myafrimall and gain unlimited access to shipping to over 300 countries from Nigeria. Do you already have an account? ',
-        ('Login', () => context.go('/login')),
+        Link('Login', () => context.go('/login')),
       ]),
       panelTitle: 'Seamlessly Delivering to Over 300 Countries from Nigeria!',
       panelBody:
@@ -174,22 +174,5 @@ class _NameRow extends StatelessWidget {
         Expanded(child: lastField),
       ]);
     });
-  }
-}
-
-class TermsText extends StatelessWidget {
-  const TermsText({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 393),
-      child: const LinkText(parts: [
-        'By clicking on create account you agree to our ',
-        ('privacy policy', null),
-        ' and ',
-        ('terms of use', null),
-      ]),
-    );
   }
 }

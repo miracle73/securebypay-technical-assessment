@@ -6,14 +6,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'api_client.dart';
 import 'models.dart';
 
-/// Owns the session: the JWT, the current user, and login/register/logout.
+/// Session state: JWT, current user, login/register/logout.
 ///
-/// The token lives in flutter_secure_storage. On web that encrypts the value
-/// with a WebCrypto key before writing it to localStorage, so it is never
-/// stored in plain text. The router listens to this notifier to gate routes.
+/// Persisted with flutter_secure_storage, which on web encrypts values with a
+/// WebCrypto key before they reach localStorage.
 class AuthController extends ChangeNotifier {
-  AuthController({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage() {
+  AuthController({FlutterSecureStorage? storage}) : _storage = storage ?? const FlutterSecureStorage() {
     api = ApiClient(tokenProvider: () => _token);
   }
 
@@ -29,11 +27,8 @@ class AuthController extends ChangeNotifier {
   AppUser? get user => _user;
   bool get isAuthenticated => _token != null && _user != null;
 
-  /// Restores a saved session on startup without waiting on the network.
-  ///
-  /// The cached profile lets the dashboard render instantly even while a
-  /// sleeping Render instance cold-starts; the token is then verified in the
-  /// background and the session is dropped if the server rejects it.
+  /// Restores the saved session from the cached profile so the first frame
+  /// doesn't wait on the network; the token is verified in the background.
   Future<void> restore() async {
     try {
       _token = await _storage.read(key: _tokenKey);

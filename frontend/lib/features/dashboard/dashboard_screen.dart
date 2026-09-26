@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../core/api_client.dart';
 import '../../core/models.dart';
-import '../../main.dart';
+import '../../core/auth_scope.dart';
 import '../../theme/app_theme.dart';
 import '../../theme/tokens.dart';
+import 'dashboard_repository.dart';
 import 'growth_chart.dart';
 import 'overview_section.dart';
 import 'promo_banner.dart';
@@ -19,27 +20,25 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late final DashboardRepository _repository;
   late Future<(Overview, List<Shipment>)> _data;
 
   @override
   void initState() {
     super.initState();
+    _repository = DashboardRepository(AuthScope.read(context).api);
     _data = _load();
   }
 
   Future<(Overview, List<Shipment>)> _load() async {
     final auth = AuthScope.read(context);
+    final overview = _repository.overview();
+    final shipments = _repository.recentShipments(limit: 3);
     try {
-      final results = await Future.wait([
-        auth.api.get('/dashboard/overview'),
-        auth.api.get('/dashboard/shipments?limit=3'),
-      ]);
-      return (
-        Overview.fromJson(results[0] as Map<String, dynamic>),
-        (results[1] as List).map((e) => Shipment.fromJson(e as Map<String, dynamic>)).toList(),
-      );
+      await Future.wait([overview, shipments]);
+      return (await overview, await shipments);
     } on ApiException catch (e) {
-      // Expired/invalid token: drop the session; the router sends us to /login.
+      // A rejected token ends the session; the router then redirects to /login.
       if (e.isUnauthorized) await auth.logout();
       rethrow;
     }
