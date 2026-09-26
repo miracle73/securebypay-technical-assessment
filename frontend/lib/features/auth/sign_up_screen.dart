@@ -53,6 +53,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         phone: '$_dialCode$national',
         password: _password.text,
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Account created. Sign in to continue.')),
+      );
+      context.go('/login', extra: _email.text.trim());
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e);
     } finally {

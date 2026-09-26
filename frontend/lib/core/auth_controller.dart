@@ -58,6 +58,7 @@ class AuthController extends ChangeNotifier {
     await _startSession(res as Map<String, dynamic>);
   }
 
+  /// Creates the account only; the user signs in afterwards.
   Future<void> register({
     required String firstName,
     required String lastName,
@@ -65,14 +66,13 @@ class AuthController extends ChangeNotifier {
     required String phone,
     required String password,
   }) async {
-    final res = await api.post('/auth/register', {
+    await api.post('/auth/register', {
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
       'phone': phone,
       'password': password,
     });
-    await _startSession(res as Map<String, dynamic>);
   }
 
   Future<void> logout() async {

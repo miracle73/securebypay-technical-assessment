@@ -104,7 +104,7 @@ Validation: valid email (stored lower-cased); password 8–72 chars with at leas
 
 ## Auth flow (end to end)
 
-1. **Sign up / Sign in.** Forms validate on the client with the same rules as the backend DTOs and show errors inline under each field. Submitting disables the form and shows a spinner on the button.
+1. **Sign up / Sign in.** Forms validate on the client with the same rules as the backend DTOs and show errors inline under each field. Submitting disables the form and shows a spinner on the button. After sign-up the user is sent to sign in, with their email prefilled.
 2. **API.** `register` hashes the password with bcrypt (cost 10) and saves the user. New accounts are seeded with demo shipments and a demo balance, so the dashboard has data to show. `login` checks the password with bcrypt and returns the same `401` for an unknown email or a wrong password, so accounts can't be discovered by guessing. Both return `{ accessToken, user }`, where the access token is a JWT (`sub` = user id) signed with `JWT_SECRET`.
 3. **Client storage.** `AuthController` saves the token with `flutter_secure_storage`. On web that encrypts it with a WebCrypto AES key before putting it in localStorage. Server errors (e.g. "Invalid email or password", "email already exists") appear in a banner above the submit button.
 4. **Route guard.** `go_router`'s `redirect` sends signed-out users to `/login` and bounces signed-in users away from `/login` and `/signup`. It listens to `AuthController`, so logging in or out navigates straight away.

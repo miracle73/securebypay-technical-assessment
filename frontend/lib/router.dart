@@ -21,7 +21,7 @@ GoRouter buildRouter(AuthController auth) => GoRouter(
       },
       routes: [
         GoRoute(path: '/', redirect: (_, __) => '/dashboard'),
-        GoRoute(path: '/login', builder: (_, __) => const SignInScreen()),
+        GoRoute(path: '/login', builder: (_, state) => SignInScreen(initialEmail: state.extra as String?)),
         GoRoute(path: '/signup', builder: (_, __) => const SignUpScreen()),
         GoRoute(path: '/dashboard', builder: (_, __) => const DashboardScreen()),
       ],
